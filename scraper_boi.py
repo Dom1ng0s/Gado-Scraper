@@ -36,21 +36,13 @@ def capturar_dados():
     # Coluna 1: Preço à Vista Bruto
     # Coluna 2: Preço 30 Dias Bruto
     # Coluna 4: Variação (# base)
-    
-    # Vamos pegar as colunas 0, 1, 2 e 4
     df_limpo = df.iloc[:, [0, 1, 2, 4]].copy()
-    
-    # Renomear para facilitar
     df_limpo.columns = ['praca', 'preco_vista', 'preco_30d', 'variacao']
-
     # 4. FILTRAGEM DE SUJEIRA
-    # Às vezes o cabeçalho se repete no meio dos dados. Vamos remover linhas onde o preço não é número.
-    # "Coerce" transforma o que não for número em NaN (Not a Number) para podermos apagar.
     df_limpo['preco_vista'] = pd.to_numeric(df_limpo['preco_vista'], errors='coerce')
     df_limpo = df_limpo.dropna(subset=['preco_vista'])
-
-    # Adiciona data
     df_limpo['data_coleta'] = datetime.now().strftime("%Y-%m-%d")
+
     return df_limpo.to_dict(orient='records')
 
 if __name__ == "__main__":
