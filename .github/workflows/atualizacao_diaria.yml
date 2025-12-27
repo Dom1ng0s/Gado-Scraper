@@ -1,0 +1,8 @@
+name: Scraper do Boi Gordo
+on: 
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+jobs:
+  minha-tarefa-de-raspagem:
+    runs-on: ubuntu-latest
