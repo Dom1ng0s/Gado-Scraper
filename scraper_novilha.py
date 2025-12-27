@@ -26,7 +26,7 @@ def capturar_dados():
 
    
     
-    # Se o cabeçalho for MultiIndex (várias linhas), vamos achatá-lo
+    # Se o cabeçalho for MultiIndex (várias linhas),
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.droplevel(0) 
         df.columns = df.columns.droplevel(0)
