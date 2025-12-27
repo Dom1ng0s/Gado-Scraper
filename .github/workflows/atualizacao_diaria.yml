@@ -2,15 +2,15 @@ name: Atualização Diária (Boi e Novilha)
 
 on:
   schedule:
-    # Roda todos os dias às 09:00 UTC (06:00 em Maceió)
+    # Roda todos os dias às 09:00 UTC
     - cron: '0 9 * * *'
-  workflow_dispatch: # Permite rodar manualmente clicando no botão "Run workflow"
+  workflow_dispatch: # Permite rodar manualmente para testar
 
 jobs:
   raspagem-completa:
     runs-on: ubuntu-latest
     
-    # CRUCIAL: Permite que o bot salve os arquivos de volta no repositório
+    # Dá permissão para o robô salvar arquivos no seu GitHub
     permissions:
       contents: write
 
@@ -35,13 +35,11 @@ jobs:
 
       - name: 6. Salvar e Enviar (Commit & Push)
         run: |
-          # Configura o "usuário fantasma" do bot
           git config --global user.name 'Bot do Scraper'
           git config --global user.email 'actions@github.com'
           
-          # Adiciona os dois arquivos JSON gerados
+          # Adiciona os arquivos gerados
           git add cotacoes_boi_hoje.json cotacoes_novilha_hoje.json
           
-          # O comando abaixo verifica se houve mudanças. 
-          # Se os dados forem idênticos aos de ontem, ele não faz nada (evita erro de commit vazio).
+          # Só faz commit se houver mudança
           git diff --quiet && git diff --staged --quiet || (git commit -m "Dados atualizados: $(date +'%Y-%m-%d')" && git push)
