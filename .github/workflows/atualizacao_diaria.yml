@@ -1,10 +1,12 @@
 name: Atualização Diária (Boi e Novilha)
 
 on:
+  push:             # <--- ADICIONAMOS ISSO (Roda ao salvar)
+    branches: [ main ]
   schedule:
-    # Roda todo dia às 09:00 UTC (06:00 Brasil)
     - cron: '0 9 * * *'
-  workflow_dispatch: # Botão para rodar manual
+  workflow_dispatch:
+
 
 jobs:
   raspagem-completa:
