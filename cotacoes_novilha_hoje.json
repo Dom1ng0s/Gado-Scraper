@@ -1,200 +1,200 @@
 [
     {
         "praca": "SP Barretos",
-        "preco_vista": 328.0,
-        "preco_30d": "332.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 331.0,
+        "preco_30d": "335.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "SP Araçatuba",
-        "preco_vista": 328.0,
-        "preco_30d": "332.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 331.0,
+        "preco_30d": "335.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MG Triângulo",
-        "preco_vista": 311.5,
-        "preco_30d": "315.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 313.5,
+        "preco_30d": "317.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MG B.Horizonte",
         "preco_vista": 314.5,
         "preco_30d": "318.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MG Norte",
-        "preco_vista": 316.5,
-        "preco_30d": "320.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 321.0,
+        "preco_30d": "325.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MG Sul",
         "preco_vista": 311.5,
         "preco_30d": "315.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "GO Goiânia",
         "preco_vista": 309.5,
         "preco_30d": "313.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "GO Reg. Sul",
         "preco_vista": 306.5,
         "preco_30d": "310.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MS Dourados",
         "preco_vista": 309.5,
         "preco_30d": "313.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MS C. Grande",
         "preco_vista": 311.5,
         "preco_30d": "315.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MS Três Lagoas",
         "preco_vista": 311.5,
         "preco_30d": "315.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "RS Oeste (kg)",
         "preco_vista": 10.95,
         "preco_30d": "11.10",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "RS Pelotas (kg)",
         "preco_vista": 10.75,
         "preco_30d": "10.90",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "BA Sul",
         "preco_vista": 291.5,
         "preco_30d": "295.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "BA Oeste",
         "preco_vista": 296.5,
         "preco_30d": "300.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MT Norte",
         "preco_vista": 316.5,
         "preco_30d": "320.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MT Sudoeste",
         "preco_vista": 316.5,
         "preco_30d": "320.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MT Cuiabá*",
         "preco_vista": 306.5,
         "preco_30d": "310.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MT Sudeste",
         "preco_vista": 316.5,
         "preco_30d": "320.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "PR Noroeste",
-        "preco_vista": 331.0,
-        "preco_30d": "335.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 333.0,
+        "preco_30d": "337.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "SC",
-        "preco_vista": 326.0,
-        "preco_30d": "330.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 331.0,
+        "preco_30d": "335.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "MA Oeste",
-        "preco_vista": 286.5,
-        "preco_30d": "290.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 291.5,
+        "preco_30d": "295.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "Alagoas",
         "preco_vista": 296.5,
         "preco_30d": "300.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "PA Marabá",
         "preco_vista": 296.5,
         "preco_30d": "300.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "PA Redenção",
         "preco_vista": 294.5,
         "preco_30d": "298.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "PA Paragominas",
-        "preco_vista": 298.5,
-        "preco_30d": "302.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 301.5,
+        "preco_30d": "305.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "RO Sudeste",
         "preco_vista": 291.5,
         "preco_30d": "295.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "TO Sul",
         "preco_vista": 291.5,
         "preco_30d": "295.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "TO Norte",
         "preco_vista": 296.5,
         "preco_30d": "300.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "Acre",
-        "preco_vista": 267.0,
-        "preco_30d": "270.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 269.0,
+        "preco_30d": "272.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "ES",
         "preco_vista": 305.5,
         "preco_30d": "309.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "RJ",
-        "preco_vista": 311.5,
-        "preco_30d": "315.00",
-        "data_coleta": "2026-02-23"
+        "preco_vista": 313.5,
+        "preco_30d": "317.00",
+        "data_coleta": "2026-02-24"
     },
     {
         "praca": "Roraima",
         "preco_vista": 272.0,
         "preco_30d": "275.00",
-        "data_coleta": "2026-02-23"
+        "data_coleta": "2026-02-24"
     }
 ]
