@@ -1,157 +1,78 @@
-<div align="center">
-
-# 🚜 Gado-Scraper
+### 🚜 Gado-Scraper
 
 **Pipeline automatizada para monitoramento diário de cotações pecuárias**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
-[![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup4-Scraping-4B8BBE?style=for-the-badge)](https://pypi.org/project/beautifulsoup4/)
-[![Status](https://img.shields.io/badge/Pipeline-Ativa%20Diariamente-brightgreen?style=for-the-badge)](https://github.com/Dom1ng0s/Gado-Scraper/actions)
-
-> Pipeline de dados que coleta automaticamente as cotações de **boi gordo** e **novilha** todos os dias — sem servidores, sem custos, sem intervenção manual. O próprio GitHub vira a infraestrutura.
-
-</div>
+Pipeline de dados que coleta e agrega automaticamente as cotações de boi gordo e novilha de **33 praças pecuárias do Brasil** todos os dias. O sistema roda 100% na nuvem via GitHub Actions — sem servidores, sem custos de infraestrutura e sem intervenção manual.
 
 ---
 
-## 💡 A Ideia por Trás do Projeto
+#### 💡 O Problema que Este Projeto Resolve
 
-Pecuaristas tomam decisões de compra e venda baseadas nas cotações do dia. O problema: essas informações estão espalhadas em sites de difícil automação e não existem APIs públicas confiáveis para o setor.
+Pecuaristas tomam decisões de compra e venda baseadas nas cotações do dia, mas essas informações estão espalhadas em dezenas de sites de difícil acesso e não existem APIs públicas confiáveis para o setor agropecuário.
 
-O Gado-Scraper resolve isso com uma abordagem elegante e de custo zero:
-
-- **GitHub Actions** age como um cron job na nuvem, rodando os scrapers todo dia
-- **O próprio repositório** funciona como banco de dados histórico — cada commit é um snapshot do preço naquele dia
-- **Sem infraestrutura própria** — sem servidor, sem banco de dados, sem custos de cloud
-
----
-
-## ⚙️ Como a Pipeline Funciona
-
-```
-┌─────────────────────────────────────────────────────┐
-│              GitHub Actions (todo dia)               │
-│                                                      │
-│  1. Checkout do repositório                          │
-│  2. pip install -r requirements.txt                  │
-│  3. python scraper_boi.py     ──► cotacoes_boi_hoje.json     │
-│  4. python scraper_novilha.py ──► cotacoes_novilha_hoje.json │
-│  5. git commit + git push (atualiza o repositório)   │
-└─────────────────────────────────────────────────────┘
-```
-
-O arquivo `.github/workflows/` contém o workflow agendado com **cron expression**, que dispara automaticamente em horário de mercado.
+O Gado-Scraper resolve isso com uma arquitetura engenhosa e de custo zero:
+*   **GitHub Actions como Cron Job:** Um workflow automatizado dispara o scraper todos os dias no horário de fechamento do mercado.
+*   **Git como Banco de Dados Histórico:** O próprio repositório funciona como armazenamento — cada commit diário é um snapshot de dados pronto para análise de séries temporais.
+*   **Integração Direta:** Os dados gerados alimentam em tempo real o ERP (Sistema de Gestão de Gado).
 
 ---
 
-## 📊 Formato dos Dados Coletados
+#### 🏗️ Arquitetura do Pipeline (ETL)
 
-Os scrapers exportam os dados em JSON estruturado, prontos para consumo por qualquer sistema:
-
-**`cotacoes_boi_hoje.json`**
-```json
-[
-  {
-    "data": "2026-02-24",
-    "categoria": "Boi Gordo",
-    "preco_arroba": "R$ 320,50",
-    "regiao": "São Paulo",
-    "fonte": "..."
-  }
-]
-```
-
-**`cotacoes_novilha_hoje.json`**
-```json
-[
-  {
-    "data": "2026-02-24",
-    "categoria": "Novilha",
-    "preco_arroba": "R$ 290,00",
-    "regiao": "Mato Grosso",
-    "fonte": "..."
-  }
-]
-```
-
-> 💾 **O histórico de preços está preservado no git log** — cada commit diário é um ponto de dado para análise de séries temporais.
+![Arquitetura do Gado-Scraper](Gado-Scraper-Arch.png)
 
 ---
 
-## 🛠️ Stack Tecnológica
+#### 📊 Formato dos Dados Coletados
+
+Os scrapers exportam os dados em arquivos JSON estruturados na raiz do repositório, prontos para consumo imediato por qualquer sistema, frontend ou API:
+
+*   `cotacoes_boi_hoje.json`
+*   `cotacoes_novilha_hoje.json`
+
+💾 **Nota:** O histórico completo de preços está preservado no `git log`. 
+
+---
+
+#### ⚙ Como a Pipeline Funciona
+
+O arquivo localizado em `.github/workflows/atualizacao_diaria.yml` contém o workflow com uma *cron expression*, que aciona os scripts `scraper_boi.py` e `scraper_novilha.py`. Eles fazem a extração via web scraping, processam os valores e realizam o *auto-commit* dos arquivos JSON atualizados.
+
+---
+
+#### 🛠 Stack Tecnológica
 
 | Responsabilidade | Tecnologia |
-|---|---|
+| ------ | ------ |
 | **Linguagem** | Python 3.10+ |
 | **Scraping** | Requests + BeautifulSoup4 |
 | **Automação / CI** | GitHub Actions (Cron) |
-| **Armazenamento** | JSON no próprio repositório |
-| **Versionamento histórico** | Git (cada commit = snapshot diário) |
+| **Armazenamento** | JSON persistido no repositório |
+| **Versionamento histórico** | Git (commits diários automáticos) |
 
 ---
 
-## 🗂️ Estrutura do Projeto
+#### 🔧 Como Fazer o Fork e Usar na Sua Conta
 
-```
-Gado-Scraper/
-├── .github/
-│   └── workflows/
-│       └── daily_scrape.yml      # Cron job: roda todo dia automaticamente
-├── scraper_boi.py                # Coleta cotações de boi gordo
-├── scraper_novilha.py            # Coleta cotações de novilha
-├── cotacoes_boi_hoje.json        # Dados mais recentes (atualizado pela pipeline)
-├── cotacoes_novilha_hoje.json    # Dados mais recentes (atualizado pela pipeline)
-└── requirements.txt
-```
+A pipeline é 100% autossuficiente e roda automaticamente em qualquer *fork*. Nenhuma configuração extra (como variáveis de ambiente ou tokens de API) é necessária.
+
+1. Faça o fork deste repositório.
+2. Vá na aba **Settings → Actions → General** do seu fork e dê as permissões de leitura e escrita para os workflows (`Read and write permissions`).
+3. O GitHub Actions passará a rodar o scraper automaticamente na sua conta todos os dias.
+
+*(Para rodar localmente, basta instalar as dependências com `pip install -r requirements.txt` e executar os scripts `.py`)*
 
 ---
 
-## 🚀 Como Rodar Localmente
+#### 🗺 Roadmap (Próximas Evoluções)
 
-```bash
-# 1. Clone o repositório
-git clone https://github.com/Dom1ng0s/Gado-Scraper.git
-cd Gado-Scraper
-
-# 2. Instale as dependências
-pip install -r requirements.txt
-
-# 3. Execute os scrapers manualmente
-python scraper_boi.py
-python scraper_novilha.py
-```
-
-Os arquivos JSON serão gerados/atualizados na raiz do projeto.
+- [x] Integração direta com o `sistema_gado` para alimentar cotações em tempo real
+- [ ] Dashboard com histórico de variações de preço (Streamlit ou Grafana)
+- [ ] Exportação automatizada para CSV visando análise em Pandas/Excel
+- [ ] Notificação via Telegram quando o preço em uma praça chave ultrapassar um threshold configurável
 
 ---
 
-## 🔧 Como Fazer o Fork e Usar no Seu Repositório
-
-A pipeline roda automaticamente em qualquer fork. Basta:
-
-1. Fazer o fork do repositório
-2. Ir em **Settings → Actions → General** e habilitar os workflows
-3. O GitHub Actions vai rodar o scraper automaticamente todo dia
-
-> Nenhuma configuração adicional necessária — sem variáveis de ambiente, sem tokens de API.
-
----
-
-## 🗺️ Próximas Evoluções
-
-- [ ] Notificação via Telegram quando o preço ultrapassar um threshold
-- [ ] Dashboard com histórico de variações (Streamlit ou Grafana)
-- [X] Integração direta com o [sistema_gado](https://github.com/Dom1ng0s/sistema_gado) para alimentar cotações em tempo real
-- [ ] Exportação para CSV para análise em Excel/Pandas
-
----
-
-## 👤 Autor
-
-**Davi Domingos de Oliveira**
+#### 👤 Autor
+**Davi Domingos de Oliveira**  
 Estudante de Ciência da Computação — UFAL | Backend Developer
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/davidomingosdeoliveira/)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/Dom1ng0s)
-[![Email](https://img.shields.io/badge/Email-D14836?style=flat&logo=gmail&logoColor=white)](mailto:odomingosdavi@gmail.com)
