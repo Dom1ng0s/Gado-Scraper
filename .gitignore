@@ -6,3 +6,5 @@ env/
 .vscode/
 Thumbs.db
 .DS_Store
+figures/
+.claude

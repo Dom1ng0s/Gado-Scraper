@@ -2,3 +2,9 @@ pandas
 requests
 lxml
 openpyxl
+matplotlib
+seaborn
+scipy
+numpy
+jupyter
+nbconvert

@@ -24,6 +24,27 @@ O Gado-Scraper resolve isso com uma arquitetura de custo zero:
 
 ---
 
+#### 🔬 Análise Exploratória (EDA)
+
+O notebook `notebooks/01_eda.ipynb` realiza uma análise completa do histórico acumulado:
+
+- **Diagnóstico** — shape, nulos, duplicatas e praças com dados incompletos
+- **Limpeza** — deduplicação por `(data, praça)` e remoção de outliers
+- **Descritiva** — ranking de praças por preço médio e coeficiente de variação
+- **Temporal** — evolução do preço médio nacional, picos, vales e sazonalidade mensal
+- **Regional** — agrupamento por UF, estado líder e estado mais volátil
+- **Correlação** — heatmap 33 × 33, pares que se movem juntos e outliers regionais
+- **Boi × Novilha** — evolução comparada e análise do spread entre os dois ativos
+
+Todas as figuras são salvas automaticamente em `notebooks/figures/`.
+
+```bash
+pip install -r requirements.txt
+jupyter notebook notebooks/01_eda.ipynb
+```
+
+---
+
 #### 📊 Formato dos Dados Coletados
 
 Os scrapers exportam os dados em dois formatos:
@@ -68,6 +89,7 @@ python build_dataset.py
 | **Armazenamento** | JSON + CSV persistidos no repositório |
 | **Alertas** | Telegram Bot API |
 | **Versionamento histórico** | Git (commits diários automáticos) |
+| **Análise de dados** | pandas, NumPy, matplotlib, seaborn, scipy |
 
 ---
 
@@ -98,6 +120,7 @@ python append_historico.py
 - [x] Integração direta com o `sistema_gado` para alimentar cotações em tempo real
 - [x] Exportação automatizada para CSV (`data/historico_boi.csv`, `data/historico_novilha.csv`)
 - [x] Notificações via Telegram (sucesso diário e alertas de falha)
+- [x] EDA completa do histórico (`notebooks/01_eda.ipynb`) com análise temporal, regional e correlação entre praças
 - [ ] Dashboard com histórico de variações de preço (Streamlit ou Grafana)
 - [ ] Alerta quando o preço em uma praça-chave ultrapassar um threshold configurável
 
