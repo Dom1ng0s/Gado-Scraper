@@ -1,18 +1,16 @@
 name: Atualização Diária (Boi e Novilha)
 
 on:
-  push:             # <--- ADICIONAMOS ISSO (Roda ao salvar)
+  push:
     branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
   workflow_dispatch:
 
-
 jobs:
   raspagem-completa:
     runs-on: ubuntu-latest
-    
-    # PERMISSÃO DE ESCRITA É OBRIGATÓRIA PARA SALVAR O JSON
+
     permissions:
       contents: write
 
@@ -30,17 +28,43 @@ jobs:
 
       - name: 4. Rodar Scraper do Boi
         run: python scraper_boi.py
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: 5. Rodar Scraper da Novilha
         run: python scraper_novilha.py
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
-      - name: 6. Salvar arquivos JSON no GitHub
+      - name: 6. Atualizar histórico acumulativo
+        run: python append_historico.py
+
+      - name: 7. Salvar arquivos no GitHub
         run: |
           git config --global user.name 'Bot do Scraper'
           git config --global user.email 'actions@github.com'
-          
-          # Adiciona os dois arquivos gerados
-          git add cotacoes_boi_hoje.json cotacoes_novilha_hoje.json
-          
-          # Só commita se tiver mudança
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Dados atualizados: $(date +'%Y-%m-%d')" && git push)
+
+          git add cotacoes_boi_hoje.json cotacoes_novilha_hoje.json \
+                  data/historico_boi.csv data/historico_novilha.csv
+
+          git diff --quiet && git diff --staged --quiet || \
+            (git commit -m "Dados atualizados: $(date +'%Y-%m-%d')" && git push)
+
+      - name: 8. Notificar sucesso no Telegram
+        if: success()
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python notificador.py "🐄 *Gado-Scraper Avisa:* Coleta do dia $(date +'%Y-%m-%d') concluída com sucesso. Cotações de boi gordo e novilha atualizadas."
+
+      - name: 9. Notificar falha no Telegram
+        if: failure()
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python notificador.py "❌ *Gado-Scraper* falhou em $(date +'%Y-%m-%d').
+          Veja o log completo: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
