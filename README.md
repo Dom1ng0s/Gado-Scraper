@@ -1,131 +1,243 @@
-### 🚜 Gado-Scraper
+# 🐄 Gado-Scraper
 
-**Pipeline automatizada para monitoramento diário de cotações pecuárias**
+**Pipeline ETL automatizada para monitoramento diário de cotações pecuárias brasileiras**
 
-Pipeline de dados que coleta e agrega automaticamente as cotações de boi gordo e novilha de **33 praças pecuárias do Brasil** todos os dias. O sistema roda 100% na nuvem via GitHub Actions — sem servidores, sem custos de infraestrutura e sem intervenção manual.
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Automatizado-2088FF?style=flat&logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![Pandas](https://img.shields.io/badge/Pandas-Data_Pipeline-150458?style=flat&logo=pandas&logoColor=white)](https://pandas.pydata.org)
+[![Praças](https://img.shields.io/badge/Praças_Monitoradas-33-green?style=flat)](https://github.com/Dom1ng0s/Gado-Scraper)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen?style=flat)](LICENSE)
+![Última atualização](https://img.shields.io/github/last-commit/Dom1ng0s/Gado-Scraper?label=última%20atualização)
 
----
-
-#### 💡 O Problema que Este Projeto Resolve
-
-Pecuaristas tomam decisões de compra e venda baseadas nas cotações do dia, mas essas informações estão espalhadas em dezenas de sites de difícil acesso e não existem APIs públicas confiáveis para o setor agropecuário.
-
-O Gado-Scraper resolve isso com uma arquitetura de custo zero:
-*   **GitHub Actions como Cron Job:** Um workflow automatizado dispara o scraper todos os dias no horário de fechamento do mercado.
-*   **Git como Banco de Dados Histórico:** O próprio repositório funciona como armazenamento — cada commit diário é um snapshot de dados pronto para análise de séries temporais.
-*   **Histórico em CSV:** Além dos commits, os dados acumulados ficam acessíveis diretamente em `data/` sem precisar parsear o git.
-*   **Integração Direta:** Os dados gerados alimentam em tempo real o ERP (Sistema de Gestão de Gado).
+Pipeline de dados que coleta e agrega automaticamente as cotações de **boi gordo** e **novilha** de 33 praças pecuárias do Brasil todos os dias. O sistema roda 100% na nuvem via GitHub Actions — sem servidores, sem custo de infraestrutura e sem intervenção manual. Os dados gerados alimentam diretamente o [Sistema de Gestão de Gado](https://sistemadogado.up.railway.app).
 
 ---
 
-#### 🏗️ Arquitetura do Pipeline (ETL)
+## Índice
 
-![Arquitetura do Gado-Scraper](Gado-Scraper-Arch.png)
+1. [O Problema que Este Projeto Resolve](#-o-problema-que-este-projeto-resolve)
+2. [Funcionalidades](#-funcionalidades)
+3. [Arquitetura](#-arquitetura)
+4. [Requisitos](#-requisitos)
+5. [Instalação e Execução](#-instalação-e-execução)
+6. [Como Usar](#-como-usar)
+7. [Formato dos Dados](#-formato-dos-dados)
+8. [O que Foi Feito](#-o-que-foi-feito)
+9. [Próximas Evoluções](#-próximas-evoluções)
+10. [Licença](#-licença)
 
 ---
 
-#### 🔬 Análise Exploratória (EDA)
+## 💡 O Problema que Este Projeto Resolve
 
-O notebook `notebooks/01_eda.ipynb` realiza uma análise completa do histórico acumulado:
+Pecuaristas tomam decisões de compra e venda com base nas cotações do dia, mas essas informações estão espalhadas em dezenas de sites de difícil acesso — e não existem APIs públicas confiáveis para o setor.
 
-- **Diagnóstico** — shape, nulos, duplicatas e praças com dados incompletos
-- **Limpeza** — deduplicação por `(data, praça)` e remoção de outliers
-- **Descritiva** — ranking de praças por preço médio e coeficiente de variação
-- **Temporal** — evolução do preço médio nacional, picos, vales e sazonalidade mensal
-- **Regional** — agrupamento por UF, estado líder e estado mais volátil
-- **Correlação** — heatmap 33 × 33, pares que se movem juntos e outliers regionais
-- **Boi × Novilha** — evolução comparada e análise do spread entre os dois ativos
+O Gado-Scraper resolve isso com uma arquitetura de **custo zero**:
 
-Todas as figuras são salvas automaticamente em `notebooks/figures/`.
+- **GitHub Actions como cron job** — dispara o scraper diariamente às 09:00 UTC no fechamento do mercado
+- **Git como banco de dados histórico** — cada commit diário é um snapshot de dados pronto para análise de séries temporais
+- **CSV acumulativo** — histórico completo acessível em `data/` sem precisar parsear o git
+- **Alertas via Telegram** — notificação de sucesso diário e alerta imediato em caso de falha
+
+---
+
+## ✨ Funcionalidades
+
+Extraídas diretamente do código:
+
+- Scraping das cotações de **boi gordo** (`scraper_boi.py`) e **novilha** (`scraper_novilha.py`) com âncora estável na string `"Funrural"` — se o layout do site mudar, este é o primeiro ponto a verificar
+- **Retry automático** com 3 tentativas e backoff de 5 segundos entre elas; timeout de 15 segundos por requisição
+- **Deduplicação por `(data, praça)`** em `append_historico.py` — evita registros duplicados se o pipeline rodar mais de uma vez no mesmo dia
+- **Reconstrução completa do histórico** via `build_dataset.py` — percorre todo o `git log` e reconstrói os CSVs a partir dos commits (útil após um fork)
+- **Notificações Telegram** configuráveis via secrets: sucesso diário e alertas de falha com link direto para o log do Actions
+- **EDA completa** em `notebooks/01_eda.ipynb` com análise temporal, regional, correlação entre praças e comparativo boi × novilha
+
+---
+
+## 🏗️ Arquitetura
+
+### Fluxo ETL
+
+```
+GitHub Actions (cron 09:00 UTC)
+        │
+        ├─► scraper_boi.py ──────┐
+        │   (scotconsultoria.com) │
+        │                        ▼
+        │                cotacoes_boi_hoje.json
+        │                        │
+        ├─► scraper_novilha.py ──┤
+        │   (scotconsultoria.com) │
+        │                        ▼
+        │             cotacoes_novilha_hoje.json
+        │                        │
+        └─► append_historico.py ─┘
+                │
+                ├─► data/historico_boi.csv     (acumulativo)
+                └─► data/historico_novilha.csv (acumulativo)
+                        │
+                        ▼
+              git commit "Dados atualizados: YYYY-MM-DD"
+                        │
+                        ▼
+              Telegram: ✅ sucesso ou ❌ falha
+```
+
+### Git como Banco de Dados Histórico
+
+Em vez de um banco de dados tradicional, cada commit diário funciona como um registro imutável e versionado. Isso elimina custo de infraestrutura e torna o histórico auditável:
 
 ```bash
-pip install -r requirements.txt
-jupyter notebook notebooks/01_eda.ipynb
+# Consultar cotações de uma data específica
+git show <commit-hash>:cotacoes_boi_hoje.json
+
+# Ver todo o histórico de commits (um por dia)
+git log --oneline
+```
+
+O `build_dataset.py` automatiza essa consulta: itera sobre todos os commits que tocaram os JSONs e reconstrói os CSVs com tipagem correta, removendo duplicatas e normalizando colunas numéricas.
+
+### Lógica de Scraping (`scraper/base.py`)
+
+| Etapa | Detalhe |
+|---|---|
+| Fetch | `requests.get` com User-Agent de browser para evitar bloqueio |
+| Parse | `pd.read_html(match="Funrural")` — âncora estável na tabela |
+| Flatten | `droplevel(0)` recursivo para achatar MultiIndex |
+| Select | Colunas por posição (`COLUNAS_IDX`), não por nome — robusto a mudanças de header |
+| Output | JSON com `data_coleta` no formato `YYYY-MM-DD` |
+
+---
+
+## 📋 Requisitos
+
+- Python 3.9+
+- Dependências (instaladas via `pip`):
+
+```
+pandas, requests, lxml, openpyxl
+matplotlib, seaborn, scipy, numpy
+jupyter, nbconvert
 ```
 
 ---
 
-#### 📊 Formato dos Dados Coletados
+## 🚀 Instalação e Execução
 
-Os scrapers exportam os dados em dois formatos:
+### Rodar Localmente
 
-**JSON do dia** (raiz do repositório):
-*   `cotacoes_boi_hoje.json`
-*   `cotacoes_novilha_hoje.json`
+```bash
+# 1. Clone o repositório
+git clone https://github.com/Dom1ng0s/Gado-Scraper.git
+cd Gado-Scraper
 
-**Histórico acumulativo em CSV** (atualizado a cada execução):
-*   `data/historico_boi.csv`
-*   `data/historico_novilha.csv`
+# 2. Instale as dependências
+pip install -r requirements.txt
+
+# 3. Execute os scrapers
+python scraper_boi.py       # → cotacoes_boi_hoje.json
+python scraper_novilha.py   # → cotacoes_novilha_hoje.json
+python append_historico.py  # → atualiza data/historico_*.csv
+```
+
+**Saída esperada:**
+```
+Acessando o site... (tentativa 1/3)
+Tabela encontrada! Dimensões brutas: (35, 8)
+Sucesso Total! 33 linhas salvas em 'cotacoes_boi_hoje.json'.
+```
+
+### Usar em Seu Próprio Fork (Pipeline Automática)
+
+A pipeline é 100% autossuficiente em qualquer fork:
+
+1. Faça o fork deste repositório
+2. Vá em **Settings → Actions → General** e habilite `Read and write permissions`
+3. *(Opcional)* Para alertas Telegram, adicione em **Settings → Secrets and variables → Actions**:
+   - `TELEGRAM_TOKEN` — token do seu bot (obtenha via [@BotFather](https://t.me/botfather))
+   - `TELEGRAM_CHAT_ID` — ID do chat (descubra via [@userinfobot](https://t.me/userinfobot))
+4. O GitHub Actions passará a rodar automaticamente todos os dias às 09:00 UTC
 
 ---
 
-#### ⚙ Como a Pipeline Funciona
+## 📖 Como Usar
 
-O workflow em `.github/workflows/atualizacao_diaria.yml` executa diariamente os seguintes passos:
+### Reconstruir o Histórico Completo
 
-1. `scraper_boi.py` e `scraper_novilha.py` fazem scraping e geram os JSONs do dia
-2. `append_historico.py` appenda os novos registros aos CSVs históricos (com guarda contra duplicatas)
-3. O commit diário salva tanto os JSONs quanto os CSVs atualizados
-4. Uma notificação Telegram confirma o sucesso — ou alerta em caso de falha
-
-A lógica de scraping é compartilhada em `scraper/base.py`, incluindo retry automático (3 tentativas, backoff de 5s) e timeout de 15s por requisição.
-
-Para reconstruir o histórico completo a partir dos commits (útil após um fork):
+Se você fez um fork e quer reconstruir os CSVs a partir do zero com base nos commits:
 
 ```bash
-pip install -r requirements.txt
 python build_dataset.py
 ```
 
----
+O script percorre todo o `git log` e gera `data/historico_boi.csv` e `data/historico_novilha.csv` com todos os dados históricos, ignorando commits com JSON malformado.
 
-#### 🛠 Stack Tecnológica
-
-| Responsabilidade | Tecnologia |
-| ------ | ------ |
-| **Linguagem** | Python 3.9+ |
-| **Scraping** | Requests + pandas (`read_html`) |
-| **Automação / CI** | GitHub Actions (Cron) |
-| **Armazenamento** | JSON + CSV persistidos no repositório |
-| **Alertas** | Telegram Bot API |
-| **Versionamento histórico** | Git (commits diários automáticos) |
-| **Análise de dados** | pandas, NumPy, matplotlib, seaborn, scipy |
-
----
-
-#### 🔧 Como Fazer o Fork e Usar na Sua Conta
-
-A pipeline é 100% autossuficiente e roda automaticamente em qualquer *fork*.
-
-1. Faça o fork deste repositório.
-2. Vá em **Settings → Actions → General** e habilite `Read and write permissions`.
-3. *(Opcional)* Para receber alertas no Telegram, adicione dois secrets em **Settings → Secrets and variables → Actions**:
-   - `TELEGRAM_TOKEN` — token do seu bot
-   - `TELEGRAM_CHAT_ID` — ID do chat que receberá as mensagens (use `@userinfobot` para descobrir o seu)
-4. O GitHub Actions passará a rodar o scraper automaticamente na sua conta todos os dias.
-
-Para rodar localmente:
+### Análise Exploratória (EDA)
 
 ```bash
-pip install -r requirements.txt
-python scraper_boi.py
-python scraper_novilha.py
-python append_historico.py
+jupyter notebook notebooks/01_eda.ipynb
+```
+
+O notebook cobre: diagnóstico de qualidade, limpeza, ranking de praças por preço médio e volatilidade, evolução temporal, agrupamento regional e correlação entre praças.
+
+---
+
+## 📊 Formato dos Dados
+
+### JSON do Dia
+
+```json
+[
+  {
+    "praca": "SP Barretos",
+    "preco_vista": 320.50,
+    "preco_30d": 322.00,
+    "variacao": 1.5,
+    "data_coleta": "2026-06-14"
+  }
+]
+```
+
+> **Nota:** `variacao` existe apenas em `cotacoes_boi_hoje.json`; o scraper de novilha não coleta essa coluna.
+
+### CSV Histórico (`data/historico_boi.csv`)
+
+```
+praca,preco_vista,preco_30d,variacao,data
+SP Barretos,320.5,322.0,1.5,2026-06-14
+MS Campo Grande,315.0,316.5,0.8,2026-06-14
+...
 ```
 
 ---
 
-#### 🗺 Roadmap (Próximas Evoluções)
+## ✅ O que Foi Feito
 
-- [x] Integração direta com o `sistema_gado` para alimentar cotações em tempo real
-- [x] Exportação automatizada para CSV (`data/historico_boi.csv`, `data/historico_novilha.csv`)
-- [x] Notificações via Telegram (sucesso diário e alertas de falha)
-- [x] EDA completa do histórico (`notebooks/01_eda.ipynb`) com análise temporal, regional e correlação entre praças
-- [ ] Dashboard com histórico de variações de preço (Streamlit ou Grafana)
-- [ ] Alerta quando o preço em uma praça-chave ultrapassar um threshold configurável
+- Integração direta com o `sistema_gado` para alimentar cotações em tempo real
+- Exportação automatizada para CSV (`data/historico_boi.csv`, `data/historico_novilha.csv`)
+- Notificações via Telegram (sucesso diário e alertas de falha com link para o log)
+- EDA completa do histórico com análise temporal, regional e correlação entre praças
 
 ---
 
-#### 👤 Autor
-**Davi Domingos de Oliveira**  
+## 🗺️ Próximas Evoluções
+
+- [ ] Dashboard interativo com histórico de variações de preço (Streamlit ou Grafana)
+- [ ] Alerta automático quando o preço em uma praça-chave ultrapassar um threshold configurável
+
+---
+
+## 👤 Autor
+
+**Davi Domingos de Oliveira**
 Estudante de Ciência da Computação — UFAL | Backend Developer
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/davidomingosdeoliveira/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/Dom1ng0s)
+[![Email](https://img.shields.io/badge/Email-D14836?style=flat&logo=gmail&logoColor=white)](mailto:odomingosdavi@gmail.com)
+
+---
+
+## 📄 Licença
+
+Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
