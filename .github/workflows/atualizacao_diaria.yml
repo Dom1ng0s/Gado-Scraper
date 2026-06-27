@@ -1,8 +1,6 @@
 name: Atualização Diária (Boi e Novilha)
 
 on:
-  push:
-    branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
   workflow_dispatch:
