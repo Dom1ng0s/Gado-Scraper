@@ -12,8 +12,6 @@ Não existe API pública para cotações de boi gordo no Brasil. As 33 praças e
 
 Cada execução gera um commit com os JSONs do dia. Isso cobre três coisas que um banco convencional exigiria configurar separadamente: o histórico é imutável por definição (`git show <hash>:cotacoes_boi_hoje.json` recupera qualquer dia), o custo de infraestrutura é zero, e qualquer fork herda o histórico completo sem migração.
 
-O `build_dataset.py` percorre todos os commits e reconstrói o CSV acumulativo se necessário. Não é necessário parsear o git manualmente para análise rotineira, porque `data/historico_boi.csv` já consolida tudo.
-
 ## Output real (execução de 2026-06-26)
 
 ```
